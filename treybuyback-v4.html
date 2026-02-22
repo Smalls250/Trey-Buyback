@@ -2,7 +2,7 @@
 
 <html lang="en">
 <head>
-<meta charset="UTF-">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Trey Buyback</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -250,6 +250,9 @@ td{padding:9px 10px;vertical-align:middle}
 .toast{position:fixed;bottom:66px;right:14px;background:var(--card2);border:1px solid var(--border2);border-radius:2px;padding:9px 14px;font-size:12px;z-index:300;transform:translateY(8px);opacity:0;transition:all .18s;pointer-events:none;max-width:280px}
 .toast.show{transform:translateY(0);opacity:1}
 .toast.success{border-left:2px solid var(--green)}.toast.error{border-left:2px solid var(--red)}.toast.info{border-left:2px solid var(--teal)}
+/* iOS Safari click fix — clicks don't fire on divs without this */
+[onclick],[onclick]{cursor:pointer}
+.nav-item,.mob-item,.pipe-card,.fu-item,.alert-item,.inv-card,.scard-h,.faq-q,.ecat,.pb-tab,.ai-mode-btn,.ai-qbtn,.funnel-step,.cbtn,.buyer-row,.listing-card,.tog,.ext-card{cursor:pointer;-webkit-tap-highlight-color:rgba(0,0,0,0);}
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--sub);border-radius:2px}
