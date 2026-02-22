@@ -368,121 +368,52 @@ td{padding:9px 10px;vertical-align:middle}
   </div>
 </div>
 
-<!-- ══ GATE SCRIPT — isolated so app errors can't kill login ══ -->
+<!-- ══ GATE SCRIPT ══ -->
 
 <script>
-(function() {
-  // Run immediately — no waiting for anything
-  function gateShow(msg) {
-    var err = document.getElementById('gate-err');
-    if (err) { err.textContent = msg; err.style.display = 'block'; }
+function gateErr(msg){var e=document.getElementById('gate-err');if(e){e.textContent=msg;e.style.display='block';}}
+function gateOpen(){document.getElementById('gate').style.display='none';}
+function showLoginScreen(){document.getElementById('gate-expired').style.display='none';document.getElementById('gate-login').style.display='block';}
+function doLogin(){
+  var email=(document.getElementById('gate-email').value||'').trim().toLowerCase();
+  var code=(document.getElementById('gate-code').value||'').trim();
+  var btn=document.getElementById('gate-btn');
+  var errEl=document.getElementById('gate-err');
+  if(errEl)errEl.style.display='none';
+  if(!email||!code){gateErr('Enter your email and access code.');return;}
+  if(email==='owner'&&code==='TREY2025'){try{localStorage.setItem('tb4_dev','1');}catch(x){}gateOpen();return;}
+  btn.textContent='CHECKING…';btn.disabled=true;
+  var decoded,parts;
+  try{decoded=atob(code);parts=decoded.split('|');}catch(x){btn.textContent='ACCESS PLATFORM →';btn.disabled=false;gateErr('Invalid code — copy it exactly from your email.');return;}
+  if(parts.length<3){btn.textContent='ACCESS PLATFORM →';btn.disabled=false;gateErr('Invalid code format.');return;}
+  var cEmail=parts[0],cExpiry=parseInt(parts[1]),cHash=parts[2];
+  if(cEmail!==email){btn.textContent='ACCESS PLATFORM →';btn.disabled=false;gateErr('Email does not match this code.');return;}
+  if(cExpiry<Date.now()){btn.textContent='ACCESS PLATFORM →';btn.disabled=false;document.getElementById('gate-login').style.display='none';document.getElementById('gate-expired').style.display='block';return;}
+  var secrets=['treybuyback2025'];
+  try{var s=localStorage.getItem('tb4_secrets');if(s)secrets=JSON.parse(s);}catch(x){}
+  var idx=0;
+  function tryNext(){
+    if(idx>=secrets.length){btn.textContent='ACCESS PLATFORM →';btn.disabled=false;gateErr('Invalid access code. Check and try again.');return;}
+    var secret=secrets[idx++];
+    crypto.subtle.digest('SHA-256',new TextEncoder().encode(cEmail+'|'+cExpiry+'|'+secret)).then(function(buf){
+      var hash=Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('').slice(0,16);
+      if(hash===cHash){try{localStorage.setItem('tb4_session',JSON.stringify({email:email,code:code,expiry:cExpiry}));}catch(x){}gateOpen();}
+      else{tryNext();}
+    }).catch(function(){tryNext();});
   }
-
-  function gateAccess() {
-    document.getElementById('gate').style.display = 'none';
-  }
-
-  function doLogin() {
-    var emailEl = document.getElementById('gate-email');
-    var codeEl  = document.getElementById('gate-code');
-    var btn     = document.getElementById('gate-btn');
-    var email   = emailEl ? emailEl.value.trim().toLowerCase() : '';
-    var code    = codeEl  ? codeEl.value.trim() : '';
-
-    if (!email || !code) { gateShow('Enter your email and access code.'); return; }
-
-    // Owner bypass — instant, no async, no crypto
-    if (email === 'owner' && code === 'TREY2025') {
-      try { localStorage.setItem('tb4_dev', '1'); } catch(e) {}
-      gateAccess();
-      return;
-    }
-
-    // Member code validation
-    if (btn) btn.textContent = 'CHECKING…';
-    validateMemberCode(email, code).then(function(result) {
-      if (btn) btn.textContent = 'ACCESS PLATFORM →';
-      if (result.ok) {
-        try { localStorage.setItem('tb4_session', JSON.stringify({ email: email, code: code, expiry: result.expiry })); } catch(e) {}
-        gateAccess();
-      } else if (result.expired) {
-        document.getElementById('gate-login').style.display = 'none';
-        document.getElementById('gate-expired').style.display = 'block';
-      } else {
-        gateShow(result.msg || 'Invalid access code.');
-      }
-    }).catch(function(e) {
-      if (btn) btn.textContent = 'ACCESS PLATFORM →';
-      gateShow('Error validating code. Try again.');
-    });
-  }
-
-  async function validateMemberCode(email, code) {
-    try {
-      var decoded = atob(code);
-      var parts   = decoded.split('|');
-      if (parts.length < 3) return { ok: false, msg: 'Invalid code format.' };
-      var cEmail  = parts[0], cExpiry = parseInt(parts[1]), cHash = parts[2];
-      if (cEmail !== email) return { ok: false, msg: 'Email does not match this code.' };
-      if (cExpiry < Date.now()) return { ok: false, expired: true };
-      var secrets = ['treybuyback2025'];
-      try { var s = localStorage.getItem('tb4_secrets'); if (s) secrets = JSON.parse(s); } catch(e) {}
-      for (var i = 0; i < secrets.length; i++) {
-        var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(cEmail + '|' + cExpiry + '|' + secrets[i]));
-        var hash = Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('').slice(0,16);
-        if (hash === cHash) return { ok: true, expiry: cExpiry };
-      }
-      return { ok: false, msg: 'Invalid access code. Check and try again.' };
-    } catch(e) {
-      return { ok: false, msg: 'Could not validate code: ' + e.message };
+  tryNext();
+}
+// Check saved session immediately
+try{
+  if(localStorage.getItem('tb4_dev')==='1'){gateOpen();}
+  else{
+    var _r=localStorage.getItem('tb4_session');
+    if(_r){var _s=JSON.parse(_r);
+      if(_s&&_s.expiry&&_s.expiry>Date.now()){gateOpen();}
+      else if(_s&&_s.expiry&&_s.expiry<Date.now()){document.getElementById('gate-login').style.display='none';document.getElementById('gate-expired').style.display='block';}
     }
   }
-
-  // Check saved session
-  function checkSaved() {
-    try {
-      if (localStorage.getItem('tb4_dev') === '1') { gateAccess(); return; }
-      var raw = localStorage.getItem('tb4_session');
-      if (!raw) return;
-      var sess = JSON.parse(raw);
-      if (!sess || !sess.email || !sess.code) return;
-      if (sess.expiry && sess.expiry < Date.now()) {
-        document.getElementById('gate-login').style.display = 'none';
-        document.getElementById('gate-expired').style.display = 'block';
-        return;
-      }
-      // Re-validate async
-      validateMemberCode(sess.email, sess.code).then(function(r) {
-        if (r.ok) gateAccess();
-        else if (r.expired) {
-          document.getElementById('gate-login').style.display = 'none';
-          document.getElementById('gate-expired').style.display = 'block';
-        }
-      }).catch(function(){});
-    } catch(e) {}
-  }
-
-  // Wire up button — works on iOS
-  document.addEventListener('DOMContentLoaded', function() {
-    var btn = document.getElementById('gate-btn');
-    if (btn) {
-      btn.addEventListener('click', doLogin);
-      btn.addEventListener('touchend', function(e) { e.preventDefault(); doLogin(); });
-    }
-    var codeInput = document.getElementById('gate-code');
-    var emailInput = document.getElementById('gate-email');
-    if (codeInput) codeInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
-    if (emailInput) emailInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
-    checkSaved();
-  });
-
-  // Expose for inline onclick fallback
-  window.doLogin = doLogin;
-  window.showLoginScreen = function() {
-    document.getElementById('gate-expired').style.display = 'none';
-    document.getElementById('gate-login').style.display = 'block';
-  };
-})();
+}catch(x){}
 </script>
 
 <!-- ══ ADMIN PANEL (secret: Shift+Ctrl+A) ══ -->
