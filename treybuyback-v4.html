@@ -283,7 +283,80 @@ td{padding:9px 10px;vertical-align:middle}
 </head>
 <body onclick="void(0)">
 
-<div class="topbar">
+<!-- ══ DEBUG HUD — remove after fix is confirmed ══ -->
+
+<div id="dbg" style="position:fixed;bottom:64px;left:8px;right:8px;z-index:999999;background:rgba(0,0,0,.93);border:1px solid #e8c04a;border-radius:4px;font-family:monospace;font-size:11px;color:#e8c04a;padding:8px 10px;pointer-events:none;max-height:38vh;overflow-y:auto;">
+  <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+    <strong>🔍 DEBUG HUD</strong>
+    <span id="dbg-close" style="color:#fff;pointer-events:auto;cursor:pointer;padding:0 4px;" ontouchend="document.getElementById('dbg').remove()" onclick="document.getElementById('dbg').remove()">✕</span>
+  </div>
+  <div id="dbg-log" style="color:#aaa;line-height:1.6;"></div>
+</div>
+<script>
+(function(){
+  var L=document.getElementById('dbg-log');
+  function log(msg,color){
+    var d=document.createElement('div');
+    d.style.color=color||'#aaa';
+    d.textContent=(new Date().toISOString().slice(11,19))+' '+msg;
+    L.appendChild(d);
+    L.scrollTop=L.scrollHeight;
+  }
+
+// TEST 1 — JS loaded?
+log(‘✅ JS loaded & running’,’#3ddc84’);
+
+// TEST 2 — Does init() exist?
+log(typeof window.nav===‘function’ ? ‘✅ nav() found’ : ‘❌ nav() NOT found — JS error before this point’,’#e8c04a’);
+
+// TEST 3 — Tap detection (capture phase — catches even blocked taps)
+var tapCount=0;
+document.addEventListener(‘touchstart’,function(e){
+tapCount++;
+var el=e.target;
+var tag=el.tagName+(el.id?’#’+el.id:el.className?’ .’+el.className.toString().split(’ ‘)[0]:’’);
+log(‘👆 touchstart #’+tapCount+’ on <’+tag+’>’,’#4a9eff’);
+},{capture:true,passive:true});
+
+document.addEventListener(‘click’,function(e){
+var el=e.target;
+var tag=el.tagName+(el.id?’#’+el.id:el.className?’ .’+el.className.toString().split(’ ‘)[0]:’’);
+log(‘🖱 click on <’+tag+’> defaultPrevented=’+e.defaultPrevented,’#f5d98a’);
+},{capture:true});
+
+// TEST 4 — Scan for elements covering the screen with pointer-events blocking
+setTimeout(function(){
+var blockers=[];
+document.querySelectorAll(’*’).forEach(function(el){
+var st=window.getComputedStyle(el);
+var r=el.getBoundingClientRect();
+// Fixed/absolute full-screen elements
+if((st.position===‘fixed’||st.position===‘absolute’)
+&& r.width>window.innerWidth*0.8
+&& r.height>window.innerHeight*0.5
+&& st.display!==‘none’
+&& st.visibility!==‘hidden’){
+var pe=st.pointerEvents;
+blockers.push((el.id||el.className.toString().slice(0,20)||el.tagName)+’ z:’+st.zIndex+’ pe:’+pe+’ op:’+parseFloat(st.opacity).toFixed(1));
+}
+});
+if(blockers.length){
+log(‘⚠ OVERLAY SUSPECTS:’,’#ff4545’);
+blockers.forEach(function(b){log(’  ‘+b,’#ff9999’);});
+} else {
+log(‘✅ No full-screen overlays detected’,’#3ddc84’);
+}
+},800);
+
+// TEST 5 — Check if nav() fires when bottom nav tapped
+setTimeout(function(){
+log(’— Tap a nav tab now —’,’#888’);
+},1200);
+})();
+</script>
+
+<!-- ══ END DEBUG HUD ══ -->
+
   <div class="logo">TREY <span>BUYBACK</span></div>
   <div class="top-right">
     <div class="badge">PRO</div>
