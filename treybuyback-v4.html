@@ -285,12 +285,12 @@ td{padding:9px 10px;vertical-align:middle}
 
 <!-- ══ DEBUG HUD — remove after fix is confirmed ══ -->
 
-<div id="dbg" style="position:fixed;bottom:64px;left:8px;right:8px;z-index:999999;background:rgba(0,0,0,.93);border:1px solid #e8c04a;border-radius:4px;font-family:monospace;font-size:11px;color:#e8c04a;padding:8px 10px;pointer-events:none;max-height:38vh;overflow-y:auto;">
-  <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-    <strong>🔍 DEBUG HUD</strong>
-    <span id="dbg-close" style="color:#fff;pointer-events:auto;cursor:pointer;padding:0 4px;" ontouchend="document.getElementById('dbg').remove()" onclick="document.getElementById('dbg').remove()">✕</span>
+<div id="dbg" style="position:fixed;top:60px;left:8px;right:8px;z-index:999999;background:rgba(0,0,0,.97);border:2px solid #e8c04a;border-radius:4px;font-family:monospace;font-size:12px;color:#e8c04a;padding:10px;pointer-events:none;max-height:50vh;overflow-y:auto;">
+  <div style="display:flex;justify-content:space-between;margin-bottom:6px;border-bottom:1px solid #333;padding-bottom:6px;">
+    <strong>🔍 DEBUG HUD — tap nav tabs after loading</strong>
+    <span id="dbg-close" style="color:#fff;pointer-events:auto;cursor:pointer;padding:0 6px;font-size:16px;" ontouchend="document.getElementById('dbg').remove()" onclick="document.getElementById('dbg').remove()">✕</span>
   </div>
-  <div id="dbg-log" style="color:#aaa;line-height:1.6;"></div>
+  <div id="dbg-log" style="color:#ccc;line-height:1.8;"></div>
 </div>
 <script>
 (function(){
