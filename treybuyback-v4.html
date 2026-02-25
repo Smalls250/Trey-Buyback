@@ -8,7 +8,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js" onerror="window.emailjs={init:()=>{},send:()=>Promise.reject('EmailJS not loaded')}"></script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;touch-action:manipulation}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+a,button,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 :root{
   --bg:#070707;--dark:#0c0c0c;--card:#111;--card2:#171717;
   --border:#1c1c1c;--border2:#282828;
@@ -17,8 +18,8 @@
   --text:#f0f0f0;--muted:#555;--sub:#1e1e1e;
   --D:'Bebas Neue',sans-serif;--M:'DM Mono',monospace;--S:'DM Sans',sans-serif
 }
-html,body{height:100%}
-body{background:var(--bg);color:var(--text);font-family:var(--S);display:flex;flex-direction:column;overflow:hidden}
+html,body{height:100%;height:-webkit-fill-available}
+body{background:var(--bg);color:var(--text);font-family:var(--S);display:flex;flex-direction:column;overflow:hidden;-webkit-tap-highlight-color:transparent}
 /* topbar */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:50px;background:var(--dark);border-bottom:1px solid var(--border);flex-shrink:0;z-index:50}
 .logo{font-family:var(--D);font-size:22px;letter-spacing:2px;color:var(--gold)}
@@ -46,7 +47,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--S);display:flex;fl
 .mob-item.active{color:var(--gold);border-top-color:var(--gold)}
 .mob-item .mi{font-size:17px}
 /* pages */
-.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;-webkit-overflow-scrolling:touch}
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
 .page{display:none;flex:1;flex-direction:column}
 .page.active{display:flex}
 /* page header */
@@ -786,14 +787,6 @@ load();
 //  INIT
 // ═══════════════════════════════════════════
 function init() {
-// iOS Safari fix — register touchend on all onclick elements
-document.querySelectorAll(’[onclick]’).forEach(el => {
-el.addEventListener(‘touchend’, function(e) {
-e.preventDefault();
-const fn = el.getAttribute(‘onclick’);
-if (fn) try { new Function(fn)(); } catch(x) {}
-}, { passive: false });
-});
 const d = new Date();
 document.getElementById(‘topDate’).textContent = d.toLocaleDateString(‘en-US’, { weekday: ‘short’, month: ‘short’, day: ‘numeric’ });
 const h = d.getHours();
