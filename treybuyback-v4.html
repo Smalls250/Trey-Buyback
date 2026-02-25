@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js" onerror="window.emailjs={init:()=>{},send:()=>Promise.reject('EmailJS not loaded')}"></script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;touch-action:manipulation}
 :root{
   --bg:#070707;--dark:#0c0c0c;--card:#111;--card2:#171717;
   --border:#1c1c1c;--border2:#282828;
@@ -282,186 +282,11 @@ td{padding:9px 10px;vertical-align:middle}
 </head>
 <body onclick="void(0)">
 
-<!-- ══ SUBSCRIPTION GATE ══ -->
-
-<div id="gate" style="position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;">
-  <div style="width:100%;max-width:400px;">
-    <!-- Logo -->
-    <div style="text-align:center;margin-bottom:32px;">
-      <div style="font-family:var(--D);font-size:42px;letter-spacing:4px;color:var(--gold);">TREY <span style="color:var(--text);">BUYBACK</span></div>
-      <div style="font-family:var(--M);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:4px;">PRO RESELLER PLATFORM</div>
-    </div>
-
-```
-<!-- Login card -->
-<div id="gate-login" style="background:var(--card);border:1px solid var(--border);border-radius:2px;overflow:hidden;">
-  <div style="padding:20px 22px;border-bottom:1px solid var(--border);background:var(--card2);">
-    <div style="font-family:var(--D);font-size:18px;letter-spacing:1px;">MEMBER LOGIN</div>
-    <div style="font-size:11px;color:var(--muted);margin-top:2px;font-family:var(--M);">Enter your email and access code</div>
-  </div>
-  <div style="padding:22px;">
-    <div style="margin-bottom:12px;">
-      <div style="font-family:var(--M);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;">Email Address</div>
-      <input id="gate-email" type="email" placeholder="you@email.com" style="width:100%;background:var(--card2);border:1px solid var(--border2);border-radius:2px;color:var(--text);font-family:var(--M);font-size:12px;padding:10px 12px;outline:none;" onkeydown="if(event.key==='Enter')gateLogin()" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border2)'">
-    </div>
-    <div style="margin-bottom:16px;">
-      <div style="font-family:var(--M);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;">Access Code</div>
-      <input id="gate-code" type="password" placeholder="••••••••••••••••" style="width:100%;background:var(--card2);border:1px solid var(--border2);border-radius:2px;color:var(--text);font-family:var(--M);font-size:12px;padding:10px 12px;outline:none;" onkeydown="if(event.key==='Enter')gateLogin()" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border2)'">
-    </div>
-    <div id="gate-err" style="display:none;background:rgba(255,69,69,.1);border:1px solid rgba(255,69,69,.25);border-radius:2px;padding:8px 10px;font-size:12px;color:var(--red);margin-bottom:12px;font-family:var(--M);"></div>
-    <button id="gate-btn" onclick="doLogin()" style="width:100%;background:var(--gold);border:none;border-radius:2px;color:#000;font-family:var(--D);font-size:18px;letter-spacing:2px;padding:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;">ACCESS PLATFORM →</button>
-    <div style="text-align:center;margin-top:14px;font-size:11px;color:var(--muted);">No code yet? <a href="treybuyback-landing.html" style="color:var(--gold);text-decoration:none;">See plans & pricing →</a></div>
-  </div>
-</div>
-
-<!-- Expired card (hidden by default) -->
-<div id="gate-expired" style="display:none;background:var(--card);border:1px solid rgba(255,69,69,.3);border-radius:2px;overflow:hidden;">
-  <div style="background:rgba(255,69,69,.08);padding:24px;text-align:center;border-bottom:1px solid rgba(255,69,69,.2);">
-    <div style="font-size:32px;margin-bottom:8px;">⏰</div>
-    <div style="font-family:var(--D);font-size:22px;letter-spacing:1px;color:var(--red);">SUBSCRIPTION EXPIRED</div>
-    <div style="font-size:12px;color:#888;margin-top:6px;line-height:1.6;">Your access period has ended. Renew to continue using Trey Buyback Pro and keep your leads, inventory, and data.</div>
-  </div>
-  <div style="padding:18px;text-align:center;">
-    <a href="mailto:treybuyback@gmail.com?subject=Renew Subscription" style="display:block;background:var(--gold);border-radius:2px;color:#000;font-family:var(--D);font-size:18px;letter-spacing:2px;padding:12px;cursor:pointer;text-decoration:none;margin-bottom:10px;">RENEW SUBSCRIPTION →</a>
-    <button onclick="showLoginScreen()" style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;font-family:var(--M);">Enter new code</button>
-  </div>
-</div>
-
-<!-- Subscribe CTA -->
-<div style="margin-top:20px;background:var(--card);border:1px solid var(--border);border-radius:2px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;">
-  <div>
-    <div style="font-family:var(--D);font-size:15px;letter-spacing:1px;margin-bottom:2px;">DON'T HAVE ACCESS?</div>
-    <div style="font-size:11px;color:var(--muted);">Plans from <strong style="color:var(--gold);">$27/mo</strong> · 7-day money-back guarantee</div>
-  </div>
-  <a href="treybuyback-landing.html" style="background:var(--gold);color:#000;font-family:var(--D);font-size:14px;letter-spacing:2px;padding:9px 18px;border-radius:2px;text-decoration:none;white-space:nowrap;flex-shrink:0;">GET ACCESS →</a>
-</div>
-
-<!-- Pricing tiers (inline) -->
-<div id="inline-pricing" style="display:none;margin-top:10px;background:var(--card);border:1px solid var(--border);border-radius:2px;overflow:hidden;">
-  <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-    <div style="font-family:var(--D);font-size:17px;letter-spacing:1px;">CHOOSE A PLAN</div>
-    <button onclick="document.getElementById('inline-pricing').style.display='none'" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;">×</button>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);">
-    <div style="background:var(--card);padding:16px;text-align:center;">
-      <div style="font-family:var(--M);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Monthly</div>
-      <div style="font-family:var(--D);font-size:30px;color:var(--text);">$47</div>
-      <div style="font-family:var(--M);font-size:9px;color:var(--muted);margin-bottom:10px;">/month</div>
-      <a href="YOUR_STRIPE_PAYMENT_LINK_HERE" target="_blank" style="display:block;background:var(--card2);border:1px solid var(--border2);border-radius:2px;color:var(--text);font-family:var(--D);font-size:12px;letter-spacing:1px;padding:7px;text-decoration:none;">BUY →</a>
-    </div>
-    <div style="background:rgba(232,192,74,.04);padding:16px;text-align:center;border-left:1px solid rgba(232,192,74,.2);border-right:1px solid rgba(232,192,74,.2);">
-      <div style="font-family:var(--M);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;">Best Value ★</div>
-      <div style="font-family:var(--D);font-size:30px;color:var(--gold);">$37</div>
-      <div style="font-family:var(--M);font-size:9px;color:var(--muted);margin-bottom:10px;">/mo · 3 months</div>
-      <a href="YOUR_STRIPE_PAYMENT_LINK_HERE" target="_blank" style="display:block;background:var(--gold);border-radius:2px;color:#000;font-family:var(--D);font-size:12px;letter-spacing:1px;padding:7px;text-decoration:none;">BUY →</a>
-    </div>
-    <div style="background:var(--card);padding:16px;text-align:center;">
-      <div style="font-family:var(--M);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Annual</div>
-      <div style="font-family:var(--D);font-size:30px;color:var(--text);">$27</div>
-      <div style="font-family:var(--M);font-size:9px;color:var(--muted);margin-bottom:10px;">/mo · yearly</div>
-      <a href="YOUR_STRIPE_PAYMENT_LINK_HERE" target="_blank" style="display:block;background:var(--card2);border:1px solid var(--border2);border-radius:2px;color:var(--text);font-family:var(--D);font-size:12px;letter-spacing:1px;padding:7px;text-decoration:none;">BUY →</a>
-    </div>
-  </div>
-  <div style="padding:10px 14px;font-family:var(--M);font-size:9px;color:var(--muted);text-align:center;border-top:1px solid var(--border);">After payment you'll receive your access code by email · 7-day money-back guarantee</div>
-</div>
-
-<button id="dev-tap" style="display:block;width:100%;text-align:center;margin-top:14px;font-family:var(--M);font-size:9px;letter-spacing:2px;color:var(--sub);background:none;border:none;cursor:default;-webkit-tap-highlight-color:transparent;padding:10px 0;">SECURE · PRIVATE · BROWSER-ONLY STORAGE</button>
-```
-
-  </div>
-</div>
-
-<!-- ══ GATE SCRIPT ══ -->
-
-<script>
-function gateErr(msg){var e=document.getElementById('gate-err');if(e){e.textContent=msg;e.style.display='block';}}
-function gateOpen(){document.getElementById('gate').style.display='none';}
-function showLoginScreen(){document.getElementById('gate-expired').style.display='none';document.getElementById('gate-login').style.display='block';}
-function doLogin(){
-  var email=(document.getElementById('gate-email').value||'').trim().toLowerCase();
-  var code=(document.getElementById('gate-code').value||'').trim();
-  var btn=document.getElementById('gate-btn');
-  var errEl=document.getElementById('gate-err');
-  if(errEl)errEl.style.display='none';
-  if(!email||!code){gateErr('Enter your email and access code.');return;}
-  if(email==='owner'&&code==='TREY2025'){try{localStorage.setItem('tb4_dev','1');}catch(x){}gateOpen();return;}
-  btn.textContent='CHECKING…';btn.disabled=true;
-  var decoded,parts;
-  try{decoded=atob(code);parts=decoded.split('|');}catch(x){btn.textContent='ACCESS PLATFORM →';btn.disabled=false;gateErr('Invalid code — copy it exactly from your email.');return;}
-  if(parts.length<3){btn.textContent='ACCESS PLATFORM →';btn.disabled=false;gateErr('Invalid code format.');return;}
-  var cEmail=parts[0],cExpiry=parseInt(parts[1]),cHash=parts[2];
-  if(cEmail!==email){btn.textContent='ACCESS PLATFORM →';btn.disabled=false;gateErr('Email does not match this code.');return;}
-  if(cExpiry<Date.now()){btn.textContent='ACCESS PLATFORM →';btn.disabled=false;document.getElementById('gate-login').style.display='none';document.getElementById('gate-expired').style.display='block';return;}
-  var secrets=['treybuyback2025'];
-  try{var s=localStorage.getItem('tb4_secrets');if(s)secrets=JSON.parse(s);}catch(x){}
-  var idx=0;
-  function tryNext(){
-    if(idx>=secrets.length){btn.textContent='ACCESS PLATFORM →';btn.disabled=false;gateErr('Invalid access code. Check and try again.');return;}
-    var secret=secrets[idx++];
-    crypto.subtle.digest('SHA-256',new TextEncoder().encode(cEmail+'|'+cExpiry+'|'+secret)).then(function(buf){
-      var hash=Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('').slice(0,16);
-      if(hash===cHash){try{localStorage.setItem('tb4_session',JSON.stringify({email:email,code:code,expiry:cExpiry}));}catch(x){}gateOpen();}
-      else{tryNext();}
-    }).catch(function(){tryNext();});
-  }
-  tryNext();
-}
-// Check saved session immediately
-try{
-  if(localStorage.getItem('tb4_dev')==='1'){gateOpen();}
-  else{
-    var _r=localStorage.getItem('tb4_session');
-    if(_r){var _s=JSON.parse(_r);
-      if(_s&&_s.expiry&&_s.expiry>Date.now()){gateOpen();}
-      else if(_s&&_s.expiry&&_s.expiry<Date.now()){document.getElementById('gate-login').style.display='none';document.getElementById('gate-expired').style.display='block';}
-    }
-  }
-}catch(x){}
-</script>
-
-<!-- ══ ADMIN PANEL (secret: Shift+Ctrl+A) ══ -->
-
-<div id="admin-panel" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:99999;align-items:center;justify-content:center;padding:24px;">
-  <div style="background:var(--card);border:1px solid var(--border);border-radius:2px;width:100%;max-width:500px;">
-    <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-      <div style="font-family:var(--D);font-size:20px;letter-spacing:1px;color:var(--gold);">⚙ ADMIN — CODE GENERATOR</div>
-      <button onclick="document.getElementById('admin-panel').style.display='none'" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;">×</button>
-    </div>
-    <div style="padding:18px;">
-      <div style="font-family:var(--M);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Admin Secret Key (set once, keep private)</div>
-      <input id="adm-secret" type="password" placeholder="Your secret key — e.g. treybuyback2025" style="width:100%;background:var(--card2);border:1px solid var(--border2);border-radius:2px;color:var(--text);font-family:var(--M);font-size:12px;padding:9px 10px;outline:none;margin-bottom:12px;">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;">
-        <div>
-          <div style="font-family:var(--M);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Member Email</div>
-          <input id="adm-email" type="email" placeholder="member@email.com" style="width:100%;background:var(--card2);border:1px solid var(--border2);border-radius:2px;color:var(--text);font-family:var(--M);font-size:12px;padding:9px 10px;outline:none;">
-        </div>
-        <div>
-          <div style="font-family:var(--M);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Duration</div>
-          <select id="adm-dur" style="width:100%;background:var(--card2);border:1px solid var(--border2);border-radius:2px;color:var(--text);font-family:var(--M);font-size:12px;padding:9px 10px;outline:none;-webkit-appearance:none;">
-            <option value="30">1 Month</option>
-            <option value="90">3 Months</option>
-            <option value="180">6 Months</option>
-            <option value="365">1 Year</option>
-          </select>
-        </div>
-      </div>
-      <button onclick="genCode()" style="width:100%;background:var(--gold);border:none;border-radius:2px;color:#000;font-family:var(--D);font-size:16px;letter-spacing:2px;padding:10px;cursor:pointer;margin-bottom:12px;">GENERATE CODE</button>
-      <div id="adm-result" style="display:none;background:var(--card2);border:1px solid var(--border2);border-radius:2px;padding:12px;">
-        <div style="font-family:var(--M);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Generated Code — send this to member</div>
-        <div id="adm-code-display" style="font-family:var(--M);font-size:11px;word-break:break-all;color:var(--gold);margin-bottom:8px;background:var(--bg);padding:9px;border-radius:2px;border:1px solid var(--border);"></div>
-        <div id="adm-expiry" style="font-size:11px;color:var(--muted);margin-bottom:8px;"></div>
-        <button onclick="copyCode()" style="background:var(--card);border:1px solid var(--border2);border-radius:2px;color:var(--text);font-size:12px;padding:6px 12px;cursor:pointer;font-family:var(--M);">Copy Code</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div class="topbar">
   <div class="logo">TREY <span>BUYBACK</span></div>
   <div class="top-right">
     <div class="badge">PRO</div>
     <div id="topDate"></div>
-    <button class="icon-btn" onclick="if(confirm('Log out?'))logout()" title="Log out">⏻</button>
     <button class="icon-btn" onclick="openModal('settings')">⚙</button>
   </div>
 </div>
@@ -961,6 +786,14 @@ load();
 //  INIT
 // ═══════════════════════════════════════════
 function init() {
+// iOS Safari fix — register touchend on all onclick elements
+document.querySelectorAll(’[onclick]’).forEach(el => {
+el.addEventListener(‘touchend’, function(e) {
+e.preventDefault();
+const fn = el.getAttribute(‘onclick’);
+if (fn) try { new Function(fn)(); } catch(x) {}
+}, { passive: false });
+});
 const d = new Date();
 document.getElementById(‘topDate’).textContent = d.toLocaleDateString(‘en-US’, { weekday: ‘short’, month: ‘short’, day: ‘numeric’ });
 const h = d.getHours();
@@ -1791,164 +1624,9 @@ a.download = filename; a.click();
 }
 
 // ═══════════════════════════════════════════
-//  SUBSCRIPTION AUTH SYSTEM
-// ═══════════════════════════════════════════
-
-// Simple hash — combines email + expiry + secret
-async function hashCode(str) {
-const buf = await crypto.subtle.digest(‘SHA-256’, new TextEncoder().encode(str));
-return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,‘0’)).join(’’).slice(0,16);
-}
-
-// Generate access code: btoa(email|expiryTimestamp|hash)
-async function genCode() {
-const secret = document.getElementById(‘adm-secret’).value.trim();
-const email  = document.getElementById(‘adm-email’).value.trim().toLowerCase();
-const days   = parseInt(document.getElementById(‘adm-dur’).value);
-if (!secret || !email) { alert(‘Fill in secret key and email’); return; }
-const expiry = Date.now() + days * 86400000;
-const hash   = await hashCode(email + ‘|’ + expiry + ‘|’ + secret);
-const code   = btoa(email + ‘|’ + expiry + ‘|’ + hash);
-document.getElementById(‘adm-result’).style.display = ‘block’;
-document.getElementById(‘adm-code-display’).textContent = code;
-document.getElementById(‘adm-expiry’).textContent = ’Expires: ’ + new Date(expiry).toLocaleDateString(‘en-US’,{month:‘long’,day:‘numeric’,year:‘numeric’});
-window._lastCode = code;
-}
-
-function copyCode() {
-navigator.clipboard.writeText(window._lastCode || ‘’);
-const btn = event.target; btn.textContent = ‘Copied! ✓’; setTimeout(() => btn.textContent = ‘Copy Code’, 1500);
-}
-
-// Validate a code for a given email
-async function validateCode(email, code) {
-try {
-const decoded = atob(code);
-const [cEmail, cExpiry, cHash] = decoded.split(’|’);
-if (cEmail !== email.toLowerCase()) return { valid: false, reason: ‘Email does not match this code.’ };
-if (parseInt(cExpiry) < Date.now()) return { valid: false, reason: ‘expired’ };
-// Try all stored secrets
-const secrets = JSON.parse(localStorage.getItem(‘tb4_secrets’) || ‘[“treybuyback2025”]’);
-for (const secret of secrets) {
-const expected = await hashCode(cEmail + ‘|’ + cExpiry + ‘|’ + secret);
-if (expected === cHash) return { valid: true, expiry: parseInt(cExpiry) };
-}
-return { valid: false, reason: ‘Invalid access code. Check your code and try again.’ };
-} catch(e) {
-return { valid: false, reason: ‘Invalid access code format.’ };
-}
-}
-
-async function gateLogin() {
-const emailEl = document.getElementById(‘gate-email’);
-const codeEl  = document.getElementById(‘gate-code’);
-const btn     = document.querySelector(’#gate-login button’);
-const email   = (emailEl.value || ‘’).trim();
-const code    = (codeEl.value || ‘’).trim();
-
-if (!email || !code) { showErr(‘Enter your email and access code.’); return; }
-
-// Owner bypass — works instantly, no crypto needed
-if (email.toLowerCase() === ‘owner’ && code === ‘TREY2025’) {
-localStorage.setItem(‘tb4_dev’, ‘1’);
-document.getElementById(‘gate’).style.display = ‘none’;
-toast(‘Owner access granted 🔑’);
-return;
-}
-
-if (btn) { btn.textContent = ‘CHECKING…’; btn.disabled = true; }
-
-try {
-const result = await validateCode(email, code);
-if (result.valid) {
-localStorage.setItem(‘tb4_session’, JSON.stringify({ email, code, expiry: result.expiry, loggedIn: Date.now() }));
-document.getElementById(‘gate’).style.display = ‘none’;
-toast(‘Welcome back, ’ + email.split(’@’)[0] + ‘! 🎯’);
-} else if (result.reason === ‘expired’) {
-showLogin();
-document.getElementById(‘gate-login’).style.display = ‘none’;
-document.getElementById(‘gate-expired’).style.display = ‘block’;
-} else {
-showErr(result.reason);
-}
-} catch(e) {
-showErr(’Error: ’ + (e.message || ‘Something went wrong. Try again.’));
-}
-
-if (btn) { btn.textContent = ‘ACCESS PLATFORM →’; btn.disabled = false; }
-}
-
-function showErr(msg) {
-const err = document.getElementById(‘gate-err’);
-err.textContent = msg; err.style.display = ‘block’;
-}
-
-function showLogin() {
-document.getElementById(‘gate-expired’).style.display = ‘none’;
-document.getElementById(‘gate-login’).style.display = ‘block’;
-document.getElementById(‘gate-err’).style.display = ‘none’;
-}
-
-async function checkSession() {
-try {
-if (localStorage.getItem(‘tb4_dev’) === ‘1’) { document.getElementById(‘gate’).style.display = ‘none’; return; }
-const raw = localStorage.getItem(‘tb4_session’);
-if (!raw) return;
-const sess = JSON.parse(raw);
-if (!sess || !sess.email || !sess.code) return;
-if (sess.expiry < Date.now()) {
-document.getElementById(‘gate-login’).style.display = ‘none’;
-document.getElementById(‘gate-expired’).style.display = ‘block’;
-return;
-}
-const result = await validateCode(sess.email, sess.code);
-if (result.valid) document.getElementById(‘gate’).style.display = ‘none’;
-else if (result.reason === ‘expired’) {
-document.getElementById(‘gate-login’).style.display = ‘none’;
-document.getElementById(‘gate-expired’).style.display = ‘block’;
-}
-} catch(e) {
-// Gate stays visible — user can log in manually
-console.log(‘Session check error:’, e);
-}
-}
-
-function logout() {
-localStorage.removeItem(‘tb4_session’);
-location.reload();
-}
-
-// Secret dev bypass — tap the footer text 7 times quickly
-let devTapCount = 0, devTapTimer = null;
-function devTap() {
-devTapCount++;
-clearTimeout(devTapTimer);
-if (devTapCount >= 7) {
-devTapCount = 0;
-const pin = prompt(‘Enter owner PIN:’);
-if (pin === ‘TREY2025’) {
-localStorage.setItem(‘tb4_dev’, ‘1’);
-document.getElementById(‘gate’).style.display = ‘none’;
-toast(‘Owner access granted 🔑’);
-} else if (pin !== null) {
-alert(‘Wrong PIN’);
-}
-} else {
-devTapTimer = setTimeout(() => devTapCount = 0, 2000);
-}
-}
-
-document.addEventListener(‘keydown’, e => {
-if (e.ctrlKey && e.shiftKey && e.key === ‘A’) {
-const panel = document.getElementById(‘admin-panel’);
-panel.style.display = panel.style.display === ‘flex’ ? ‘none’ : ‘flex’;
-}
-});
-
-// ═══════════════════════════════════════════
 //  BOOT
 // ═══════════════════════════════════════════
-checkSession().then(() => init());
+init();
 </script>
 
 </body>
