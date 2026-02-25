@@ -291,7 +291,7 @@ td{padding:9px 10px;vertical-align:middle}
     <span id="dbg-close" style="color:#fff;pointer-events:auto;cursor:pointer;padding:0 6px;font-size:16px;" ontouchend="document.getElementById('dbg').remove()" onclick="document.getElementById('dbg').remove()">✕</span>
   </div>
   <div id="dbg-log" style="color:#ccc;line-height:1.8;"></div>
-</div>
+  <button onclick="log('✅ BUTTON TAP WORKS — onclick fires!','#3ddc84')" ontouchend="log('✅ BUTTON TOUCHEND WORKS!','#3ddc84')" style="margin-top:8px;width:100%;background:#e8c04a;color:#000;border:none;border-radius:4px;padding:12px;font-size:14px;font-weight:bold;pointer-events:auto;cursor:pointer;">👆 TAP THIS TO TEST TAPS</button>
 <script>
 (function(){
   var L=document.getElementById('dbg-log');
@@ -306,8 +306,14 @@ td{padding:9px 10px;vertical-align:middle}
 // TEST 1 — JS loaded?
 log(‘✅ JS loaded & running’,’#3ddc84’);
 
-// TEST 2 — Does init() exist?
-log(typeof window.nav===‘function’ ? ‘✅ nav() found’ : ‘❌ nav() NOT found — JS error before this point’,’#e8c04a’);
+// TEST 2 — nav() check AFTER page fully loads (was checking too early before)
+window.addEventListener(‘load’, function() {
+log(typeof window.nav===‘function’ ? ‘✅ nav() defined after load’ : ‘❌ nav() MISSING after load — real JS crash’,’#e8c04a’);
+// TEST 2b — try calling nav directly
+try {
+if (typeof window.nav === ‘function’) log(‘✅ nav() callable’,’#3ddc84’);
+} catch(x) { log(‘❌ nav() throws: ‘+x.message,’#ff4545’); }
+});
 
 // TEST 3 — Tap detection (capture phase — catches even blocked taps)
 var tapCount=0;
